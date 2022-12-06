@@ -13,16 +13,16 @@
 ##########################################
 # CONSTANT RELATIONSHIP TABLE            #
 ##########################################
-# FOR TEMP DATA :	                     #
-# grid extension:    					 #
-# LAT    			LON                  # DATASET RELATED CUSTOMIZATION 
+# FOR TEMP DATA :                        #
+# grid extension:                        #
+# LAT               LON                  # DATASET RELATED CUSTOMIZATION 
 # 35.25N-69.75N / 24.75W-39.75E          # See --> https://crudata.uea.ac.uk/cru/projects/soap/data/recon/#paul05
-# years: 1500 to 2002		             # 
-# grid dimensions : 130 cols x 70  rows  #	
+# years: 1500 to 2002                    # 
+# grid dimensions : 130 cols x 70  rows  #
 #----------------------------------------#
 # FOR PREC DATA:                         #
-# grid extension:    					 #
-# LAT    			LON                  #
+# grid extension:                        #
+# LAT               LON                  #
 # 30.25N-70.75N / 29.75W-39.75E          #
 # years: 1500 to 2000                    #
 # grid dimensions : 140 cols x 82 rows   #
