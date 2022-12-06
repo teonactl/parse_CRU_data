@@ -41,7 +41,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.basemap import Basemap
 from matplotlib.collections import PatchCollection
 from matplotlib.patches import Polygon
-
+import matplotlib.colors
 
 # Args Parser
 parser = argparse.ArgumentParser( prog = 'scrape_CRU_data',
@@ -58,7 +58,7 @@ parser.add_argument("-lllo", "--low_left_lon", required=True)
 parser.add_argument("-llla", "--low_left_lat", required=True)
 parser.add_argument("-y_sta", "--year_start", required=True)
 parser.add_argument("-y_sto", "--year_stop", required=True)
-parser.add_argument("-map", "--show_map", action='store_true')
+parser.add_argument("-map", "--show_map", required=False)
 
 
 args = parser.parse_args()
@@ -152,9 +152,9 @@ with open (f"{args.spring_file[:-4]}.json", "w+") as of:
 print("Creating a map..")
 
 # Create a basemap using the interested area coordinates
-m = Basemap(
- llcrnrlat =float(args.low_left_lat ), llcrnrlon =float(args.low_left_lon),
- urcrnrlat =float(args.up_right_lat) , urcrnrlon= float(args.up_right_lon)
+m = Basemap( projection='cyl',
+ llcrnrlat =float(args.low_left_lat )+ 0.25, llcrnrlon =float(args.low_left_lon) -0.25, # cit. "(all coordinates given here denote the centre of each box)"
+ urcrnrlat =float(args.up_right_lat)+ 0.25 , urcrnrlon= float(args.up_right_lon) -0.25
  )
 
 # Create a grid from the map using the user feeded dimensions
@@ -220,7 +220,10 @@ except Exception :
 	sys.exit()
 
 # Build a sample map for debugging, colors adapted for temp map..
-su=summer["1500"]
+if args.show_map :
+	su=summer[args.show_map]
+else: 
+	su=summer["1500"]
 year = []
 for i in su:
 	year = year + i
@@ -228,26 +231,73 @@ for i in su:
 def cb(i):
 	#print(*args)
 	c = float(year[i])
-	if c<= -30:
-		return "white"
-	if  -15>= c > -20 :
-		return "purple"
-	if  -10 >= c > -15:
-		return "blue"
-	if -5 >=c > -10:
-		return "cyan"
-	if  0>=c > -5:
-		return "aquamarine"
-	if 5 >=c > 0:
-		return "green"
-	if 10>=c > 5:
-		return "yellow"
-	if 15>=c > 10:
-		return "red"
-	if c > 15:
-		return "purple"
-	else : 
-		return "black"
+	if args.spring_file[:-4].split('_')[0] == "temp":
+		if c == -99.999:
+			return "white"
+		if -20 > c<= -30:
+			return "black"
+		if  -15>= c > -20 :
+			return "purple"
+		if  -10 >= c > -15:
+			return "blue"
+		if -5 >=c > -10:
+			return "cyan"
+		if  0>=c > -5:
+			return "turquoise"
+		if 2.5 >=c > 0:
+			return "green"
+		if 5 >= c > 2.5:
+			return "greenyellow"
+		if 10>=c > 5:
+			return "yellow"
+		if  12.5 > c > 10:
+			return "orange"
+		if 15>=c > 12.5:
+			return "red"
+		if 20 >= c > 15:
+			return "darkorchid"
+		if  c > 20 :
+			return "purple"
+		else :
+			return "white"
+	
+	elif args.spring_file[:-4].split('_')[0] == "prec":
+		if c<= -30:
+			return "white"
+		if  50 > c > 0:
+			return "red"
+		if  100 >= c > 50:
+			return "orangered"
+		if 150 >=c > 100:
+			return "orange"
+		if  200 >=c > 150:
+			return "yellow"
+		if  250 >= c > 200:
+			return "greenyellow"
+		if 300 >=c > 250:
+			return "green"
+		if  350 >=c > 300:
+			return "lightseagreen"
+		if 400 >=c > 350:
+			return "turquoise"
+		if 450>=c > 400:
+			return "cyan"
+		if 500>=c > 450:
+			return "deepskyblue"
+		if 550>=c > 500:
+			return "dodgerblue"
+		if 600>=c > 550:
+			return "royalblue"
+		if 650>=c > 600:
+			return "mediumblue"
+		if 700>=c > 650:
+			return "red"
+		if c > 700:
+			return "black"		
+
+	else:
+		print("Data type not supported")
+		sys.exit()
 
 # Calc the center of every square area in "quadri" and populate "centers" flat list
 for i, q in enumerate(quadri):
@@ -263,7 +313,9 @@ ax.add_collection(p)
 
 # Show the map and exit [for debug purposes]
 if args.show_map:
-	print("SHOWING PLOT FOR YEAR 1500 FOR DEBUGGING...")
+	print("SHOWING MAP FOR YEAR "+args.show_map+" FOR DEBUGGING...")
+	plt.title( f"{args.spring_file[:-4].split('_')[0]} map for  for year {args.show_map}")
+	#plt.colorbar(cmap = custom_map, ticks=[-99, 30] )
 	plt.show()
 	sys.exit()
 
